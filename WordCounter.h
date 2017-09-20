@@ -5,7 +5,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include <map>
+#include <vector>
 
 /* This is a program which will count the number of unique words in a file
  * words can be any series of characters, where a word is:
@@ -41,6 +41,26 @@ class WordCounter {
     bool Read(std::istream &istr);
 
   private:
-    std::map<std::string, size_t> words;
+    struct entry {
+        std::string word;
+        size_t frequency = 0;
+
+        entry(std::string w, size_t f = 0) : word(std::move(w)), frequency(f) {}
+    };
+
+    struct unique_words {
+
+        auto begin() const { return _container.begin(); }
+        auto end() const   { return _container.end(); }
+
+        entry& ensure(std::string const& key);
+
+      private:
+        auto begin()       { return _container.begin(); }
+        auto end()         { return _container.end(); }
+        // invariant: sorted
+        struct by_name;
+        std::vector<entry> _container;
+    } words;
 };
 #endif

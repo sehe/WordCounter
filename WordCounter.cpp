@@ -27,6 +27,30 @@ namespace {
       public:
         char _prev = '\0', _cur = '\0', _peek = '\0';
     };
+
+}
+
+struct WordCounter::unique_words::by_name {
+
+    // allows mixed comparisons between `entry` and `string`
+    template <typename U, typename V>
+        bool operator()(U const& a, V const& b) const { return key(a) < key(b); } 
+
+    private:
+    static std::string const& key(std::string const& w) { return w; }
+    static std::string const& key(WordCounter::entry const& e) { return e.word; }
+};
+
+WordCounter::entry& WordCounter::unique_words::ensure(std::string const& key) {
+    // do a binary lookup
+    auto eqr = std::equal_range(begin(), end(), key, by_name{});
+
+    if (eqr.first != eqr.second)
+        return *eqr.first; // return existing
+    else {
+        // insert before upperbound
+        return *_container.insert(eqr.second, key);
+    }
 }
 
 /* This class accepts a file with at least 1 character in it
@@ -62,7 +86,7 @@ bool WordCounter::Read(std::istream &istr) {
 
         //if (new_sentence) std::cout << "new_sentence after '" << word << "'\n";
 
-        histo[word]++;
+        histo.ensure(word).frequency++;
     };
 
     scan_window input(istr);
@@ -107,6 +131,6 @@ bool WordCounter::Read(std::istream &istr) {
 // Writes the output to the terminal
 void WordCounter::Write() const {
     for (auto& w : words) {
-        std::cout << w.first << " " << w.second << "\n";
+        std::cout << w.word << " " << w.frequency << "\n";
     }
 }
