@@ -71,7 +71,8 @@ bool WordCounter::Read(std::istream &istr) {
         if (input.eof()) return false;
         return (input._cur == '.' && isdigit(input._peek))
             //|| (input._cur == '\'')
-            || (startofword | isdigit(input._prev) && std::strchr(".,", input._cur) && isdigit(input._peek))
+            || (startofword | isdigit(input._prev) && '.' == input._cur && isdigit(input._peek))
+            || (              isdigit(input._prev) && ',' == input._cur && isdigit(input._peek))
             || (!isspace(input._cur) && !ispunct(input._cur));
     };
 
