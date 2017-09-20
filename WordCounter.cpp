@@ -41,15 +41,19 @@ struct WordCounter::unique_words::by_name {
     static std::string const& key(WordCounter::entry const& e) { return e.word; }
 };
 
-WordCounter::entry& WordCounter::unique_words::ensure(std::string const& key) {
-    // do a binary lookup
-    auto eqr = std::equal_range(begin(), end(), key, by_name{});
+void WordCounter::unique_words::sort() {
+    std::sort(begin(), end(), by_name{});
+}
 
-    if (eqr.first != eqr.second)
-        return *eqr.first; // return existing
+WordCounter::entry& WordCounter::unique_words::ensure(std::string const& key) {
+    auto eqr = std::find_if(begin(), end(), [=](entry const& e) { return key == e.word; });
+
+    if (eqr != end())
+        return *eqr; // return existing
     else {
         // insert before upperbound
-        return *_container.insert(eqr.second, key);
+        _container.emplace_back(key);
+        return _container.back();
     }
 }
 
@@ -126,6 +130,10 @@ bool WordCounter::Read(std::istream &istr) {
         return false;
 
     return true;
+}
+
+void WordCounter::Sort() {
+    words.sort();
 }
 
 // Writes the output to the terminal

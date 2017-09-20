@@ -28,5 +28,6 @@ int main(int argc, char *argv[]) {
         return Usage(argv[0]);
 
     // write output to terminal
+    wc1.Sort();
     wc1.Write();
 }

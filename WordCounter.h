@@ -36,6 +36,7 @@ class WordCounter {
 
     // Accessors
     void Write() const;
+    void Sort();
 
     // Mutators
     bool Read(std::istream &istr);
@@ -50,6 +51,7 @@ class WordCounter {
 
     struct unique_words {
 
+        void sort();
         auto begin() const { return _container.begin(); }
         auto end() const   { return _container.end(); }
 
@@ -58,7 +60,6 @@ class WordCounter {
       private:
         auto begin()       { return _container.begin(); }
         auto end()         { return _container.end(); }
-        // invariant: sorted
         struct by_name;
         std::vector<entry> _container;
     } words;
